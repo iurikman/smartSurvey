@@ -1,1 +1,1 @@
-module firstProject
+module smartSurvey
