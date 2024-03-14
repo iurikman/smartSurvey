@@ -7,45 +7,61 @@ import (
 )
 
 func main() {
+
 	go func() {
-		http.ListenAndServe(":8000", &handler1{})
+		err := http.ListenAndServe(":8000", &handler1{})
+		if err != nil {
+			return
+		}
 	}()
-	http.ListenAndServe(":8080", &handler2{})
+	err := http.ListenAndServe(":8080", &handler2{})
+	if err != nil {
+		return
+	}
 }
 
-type handler1 struct {
-}
+type handler1 struct{}
 
 func (h1 *handler1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("8000"))
-	w.Write([]byte(time.Now().String()))
-	s := ipStat{}
-	s.printIpStat(w, r)
+	_, err := w.Write([]byte("--- 8 0 0 0 ---"))
+	if err != nil {
+		return
+	}
+	_, err = w.Write([]byte(time.Now().String()))
+	if err != nil {
+		return
+	}
+	ipStat := ipStat{}
+	ipStat.printIpStat(w, r)
 }
 
-type handler2 struct {
-}
+type handler2 struct{}
 
 func (h2 *handler2) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("8080"))
-	var ipAddreses []byte
-	fmt.Append(ipAddreses, []byte(r.RemoteAddr))
-	w.Write([]byte(r.RemoteAddr))
-	s := ipStat{}
-	s.printIpStat(w, r)
+	_, err := w.Write([]byte("--- 8 0 8 0 ---"))
+	if err != nil {
+		return
+	}
 }
 
 type ipStat struct {
+	ipInfo map[string]int
 }
 
-var stat []string
-
 func (i *ipStat) printIpStat(w http.ResponseWriter, r *http.Request) {
-
-	stat = append(stat, r.RemoteAddr)
-	fmt.Println(stat)
-	for _, value := range stat {
-		w.Write([]byte(value))
+	ip := r.RemoteAddr
+	val, ok := i.ipInfo[ip]
+	if ok {
+		i.ipInfo[ip] = val + 1
+	} else {
+		i.ipInfo[ip] = 1
 	}
-
+	ipStatInString := ""
+	for key, val := range i.ipInfo {
+		ipStatInString += fmt.Sprint(key + ": " + string(rune(val)) + "\n")
+	}
+	_, err := w.Write([]byte(ipStatInString))
+	if err != nil {
+		return
+	}
 }
