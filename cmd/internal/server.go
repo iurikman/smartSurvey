@@ -8,9 +8,11 @@ import (
 )
 
 type Server struct {
+	port   string
+	server *http.Server
 }
 
-func (s *Server) Start() {
+func NewServer(port string) *Server {
 	r := http.NewServeMux()
 	h := handler{
 		ipStats: ipStats{
@@ -23,8 +25,12 @@ func (s *Server) Start() {
 		Addr:    ":8080",
 		Handler: r,
 	}
+	return &Server{port: srv.Addr, server: srv}
+}
 
-	err := srv.ListenAndServe()
+func (s *Server) Start() {
+
+	err := s.server.ListenAndServe()
 	if err != http.ErrServerClosed && err != nil {
 		panic("srever error")
 	}
