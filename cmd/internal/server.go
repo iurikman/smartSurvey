@@ -1,4 +1,4 @@
-package server
+package server1
 
 import (
 	"fmt"
@@ -7,10 +7,10 @@ import (
 	"time"
 )
 
-type server struct {
+type Server struct {
 }
 
-func (s *server) start() {
+func (s *Server) start() {
 	r := http.NewServeMux()
 	h := handler{
 		ipStats: ipStats{
