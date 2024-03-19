@@ -22,7 +22,7 @@ func NewServer(port string) *Server {
 	r.HandleFunc("GET /time", h.handleTime)
 	r.HandleFunc("GET /stats", h.handleStats)
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    port,
 		Handler: r,
 	}
 	return &Server{port: srv.Addr, server: srv}
