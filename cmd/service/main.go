@@ -1,6 +1,8 @@
 package main
 
+import "github.com/iurikman/smartSurvey/cmd/internal"
+
 func main() {
-	server := server{}
-	server.start()
+	serverOne server := server()
+	severOne.start()
 }
