@@ -1,15 +1,15 @@
 linters-settings:
   gocyclo:
-    min-complexity: 24
-    cyclop:
+      min-complexity: 24
+  cyclop:
       max-complexity: 24
-      forbidigo:
-        forbid:
-          - .*\.fatal,*
-          - fmt,Print.*
+  forbidigo:
+    forbid:
+      - .*\.fatal,*
+      - fmt,Print.*
 
 linters:
-  enadle-all: true
+  enable-all: true
 
   disable:
     - deadcode

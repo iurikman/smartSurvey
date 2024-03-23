@@ -2,18 +2,19 @@ package main
 
 import (
 	"context"
-	"github.com/iurikman/smartSurvey/internal"
-	"github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
 	"syscall"
-)
 
-var log = logrus.New()
+	server "github.com/iurikman/smartSurvey/internal/rest"
+	log "github.com/sirupsen/logrus"
+)
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
+
 	defer cancel()
+
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGHUP, syscall.SIGQUIT)
 
