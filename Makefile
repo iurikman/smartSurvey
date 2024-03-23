@@ -8,3 +8,10 @@ lint:
 	gofumpt -w .
 	go mod tidy
 	golangci-lint run --fix -c .golangci.yml ./...
+
+test:
+	make run &
+	go test ./...
+	fg
+	PID=$!
+	kill $PID

@@ -2,26 +2,19 @@ package main
 
 import (
 	"context"
-	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/iurikman/smartSurvey/internal/logger"
 	server "github.com/iurikman/smartSurvey/internal/rest"
 	log "github.com/sirupsen/logrus"
 )
 
 func main() {
-	ctx, cancel := context.WithCancel(context.Background())
+	logger.InitLogger("debug")
 
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGHUP, syscall.SIGQUIT)
 	defer cancel()
-
-	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGHUP, syscall.SIGQUIT)
-
-	go func() {
-		<-sigCh
-		cancel()
-	}()
 
 	serverOne := server.NewServer(":8080")
 

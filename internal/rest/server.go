@@ -4,10 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/sirupsen/logrus"
+)
+
+const (
+	readHeaderTimeout       = 10 * time.Second
+	gracefulShutdownTimeout = 10 * time.Second
 )
 
 type Server struct {
@@ -25,7 +31,7 @@ func NewServer(port string) *Server {
 	r.HandleFunc("GET /time", h.handleTime)
 	r.HandleFunc("GET /stats", h.handleStats)
 	srv := &http.Server{
-		ReadHeaderTimeout: 10 * time.Second,
+		ReadHeaderTimeout: readHeaderTimeout,
 		Addr:              port,
 		Handler:           r,
 	}
@@ -36,21 +42,19 @@ func NewServer(port string) *Server {
 func (s *Server) Start(ctx context.Context) error {
 	go func() {
 		<-ctx.Done()
-		ctxWithTimeOut, cancel := context.WithTimeout(ctx, 10*time.Second)
+		ctxWithTimeOut, cancel := context.WithTimeout(ctx, gracefulShutdownTimeout)
 
 		defer cancel()
 
 		err := s.server.Shutdown(ctxWithTimeOut)
 		if err != nil {
-			log.Panic("server Shutdown error")
+			logrus.Warnf("server Shutdown error: %v", err)
 		}
 	}()
 
 	err := s.server.ListenAndServe()
 
-	if !errors.Is(err, http.ErrServerClosed) && err != nil {
-		log.Panic("ListenAndServe error")
-
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return fmt.Errorf("server closed error: %w", err)
 	}
 
@@ -70,7 +74,7 @@ func (h *handler) handleStats(w http.ResponseWriter, _ *http.Request) {
 
 	_, err := w.Write([]byte(ipStatInString))
 	if err != nil {
-		log.Panic("Write error")
+		logrus.Warnf("Write error: %v", err)
 
 		return
 	}
@@ -81,7 +85,7 @@ func (h *handler) handleTime(w http.ResponseWriter, r *http.Request) {
 
 	_, err := w.Write([]byte(time.Now().String()))
 	if err != nil {
-		log.Panic("Write error")
+		logrus.Warnf("Write error: %v", err)
 
 		return
 	}
