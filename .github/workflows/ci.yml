@@ -1,13 +1,13 @@
 name: CI
 on:
   push:
-    branches: [ ci ]
+    branches: [ main ]
   pull_request:
-    branches: [ ci ]
+    branches: [ main ]
 
 jobs:
   lint:
-    runs-on: ubuntu test
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v3
         with:
