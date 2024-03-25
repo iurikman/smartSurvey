@@ -11,7 +11,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.52
+          args: --timeout 10m
 
   test:
     runs-on: ubuntu-latest
