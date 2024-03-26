@@ -83,7 +83,9 @@ func (h *handler) handleStats(w http.ResponseWriter, _ *http.Request) {
 func (h *handler) handleTime(w http.ResponseWriter, r *http.Request) {
 	h.ipStats.mx.Lock()
 	defer h.ipStats.mx.Unlock()
+
 	h.ipStats.ipInfo[r.RemoteAddr]++
+
 	_, err := w.Write([]byte(time.Now().String()))
 	if err != nil {
 		logrus.Warnf("Write error: %v", err)
