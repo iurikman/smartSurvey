@@ -9,6 +9,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.22'
+      - run: ls -lash
       - uses: golangci/golangci-lint-action@v4
         with:
           version: v1.56.2
@@ -21,7 +22,8 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.22'
-      - run: go test -race ./..
+      - run: ls -lash
+      - run: go test -race ./...
 
   build:
     strategy:
@@ -34,5 +36,6 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
+      - run: ls -lash
       - run: go build ./cmd/service/main
 
