@@ -2,14 +2,16 @@ name: CI
 on: push
 
 jobs:
+
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: '1.22'
-      - uses: actions/checkout@v3
-      - uses: golangci/golangci-lint-action@v3
+      - uses: actions/checkout@v4
+      - uses: golangci/golangci-lint-action@v4
         with:
           version: v1.56.2
           args: --timeout=5m
@@ -17,10 +19,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: -actions/setup-go@v3
+      - uses: -actions/setup-go@v4
+      - uses: -action/setup-go@v5
         with:
           go-version: '1.22'
-      - uses: actions/checkout@v3
       - run: go test -race ./..
 
   build:
@@ -30,9 +32,8 @@ jobs:
         os: [ ubuntu-latest ]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v4
+      - uses: action/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
-      - uses: actions/checkout@v3
       - run: go build ./cmd/service/main
-
