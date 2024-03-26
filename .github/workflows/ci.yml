@@ -36,4 +36,4 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
-      - run: go build ./cmd/service/main
+      - run: go build ./cmd/service/main.go
