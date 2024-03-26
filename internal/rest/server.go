@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -24,7 +25,7 @@ type Server struct {
 func NewServer(port string) *Server {
 	r := http.NewServeMux()
 	h := handler{
-		ipStats: ipStats{
+		ipStats: &ipStats{
 			ipInfo: make(map[string]int),
 		},
 	}
@@ -62,12 +63,11 @@ func (s *Server) Start(ctx context.Context) error {
 }
 
 type handler struct {
-	ipStats ipStats
+	ipStats *ipStats
 }
 
 func (h *handler) handleStats(w http.ResponseWriter, _ *http.Request) {
 	var ipStatInString string
-
 	for key, val := range h.ipStats.ipInfo {
 		ipStatInString += key + " :  " + strconv.Itoa(val) + "  ||||  "
 	}
@@ -81,8 +81,9 @@ func (h *handler) handleStats(w http.ResponseWriter, _ *http.Request) {
 }
 
 func (h *handler) handleTime(w http.ResponseWriter, r *http.Request) {
+	h.ipStats.mx.Lock()
+	defer h.ipStats.mx.Unlock()
 	h.ipStats.ipInfo[r.RemoteAddr]++
-
 	_, err := w.Write([]byte(time.Now().String()))
 	if err != nil {
 		logrus.Warnf("Write error: %v", err)
@@ -92,5 +93,6 @@ func (h *handler) handleTime(w http.ResponseWriter, r *http.Request) {
 }
 
 type ipStats struct {
+	mx     sync.Mutex
 	ipInfo map[string]int
 }
