@@ -27,6 +27,7 @@ linters:
     - varnamelen
     - structcheck
     - scopelint
+    - tagalign
     - varcheck
     - wastedassign
 
