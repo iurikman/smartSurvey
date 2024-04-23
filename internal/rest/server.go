@@ -68,11 +68,6 @@ type handler struct {
 
 func (h *handler) handleStats(w http.ResponseWriter, _ *http.Request) {
 	var ipStatInString string
-
-	h.ipStats.mx.Lock()
-
-	defer h.ipStats.mx.Unlock()
-
 	for key, val := range h.ipStats.ipInfo {
 		ipStatInString += key + " :  " + strconv.Itoa(val) + "  ||||  "
 	}
