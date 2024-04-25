@@ -6,5 +6,5 @@ COPY . /usr/src/app
 RUN CGO_ENABLED=0 GOOS=linux go build -o smartsurvey cmd/service/main.go
 
 FROM debian:stable-slim
-COPY --from=builder . ./bin/smartsurvey
+COPY --from=builder ./usr/src/app/smartsurvey ./bin/smartsurvey
 ENTRYPOINT ["./bin/smartsurvey"]
