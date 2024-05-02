@@ -1,3 +1,5 @@
+-- +migrate up
+
 CREATE TABLE users (
     id         uuid not null unique primary key,
     company references companies (id),
@@ -15,3 +17,7 @@ CREATE TABLE companies (
     id          uuid not null unique primary key,
     name        varchar not null unique
 );
+
+-- +migrate Down
+
+DROP TABLE users, companies CASCADE;
