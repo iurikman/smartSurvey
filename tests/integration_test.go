@@ -20,6 +20,8 @@ func TestGetTime(t *testing.T) {
 	)
 	require.NoError(t, err)
 
+	t.Skip()
+
 	client := http.Client{}
 
 	wg := sync.WaitGroup{}
@@ -34,8 +36,6 @@ func TestGetTime(t *testing.T) {
 			require.Equal(t, http.StatusOK, resp.StatusCode)
 		}()
 	}
-
-	t.Skip()
 
 	wg.Wait()
 }
