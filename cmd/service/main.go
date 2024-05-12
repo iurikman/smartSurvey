@@ -2,15 +2,14 @@ package main
 
 import (
 	"context"
-	"github.com/iurikman/smartSurvey/internal/config"
-	"github.com/iurikman/smartSurvey/internal/store"
-	migrate "github.com/rubenv/sql-migrate"
-	"go.uber.org/zap"
 	"os/signal"
 	"syscall"
 
+	"github.com/iurikman/smartSurvey/internal/config"
 	"github.com/iurikman/smartSurvey/internal/logger"
 	server "github.com/iurikman/smartSurvey/internal/rest"
+	"github.com/iurikman/smartSurvey/internal/store"
+	migrate "github.com/rubenv/sql-migrate"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -25,19 +24,17 @@ func main() {
 
 	err := serverOne.Start(ctx)
 	if err != nil {
-		log.Panic("Server start error")
+		log.Panicf("Server start error: %v", err)
 	}
-
-	defer zap.L().Sync()
 
 	pgStore, err := store.New(ctx, cfg)
 	if err != nil {
-		zap.L().With(zap.Error(err)).Panic("pgStore.New")
+		log.Panicf("pgStore.New: %v", err)
 	}
 
 	if err := pgStore.Migrate(migrate.Up); err != nil {
-		zap.L().With(zap.Error(err)).Panic("pgStore.Migrate")
+		log.Panicf("pgStore.Migrate: %v", err)
 	}
 
-	zap.L().Info("successful migration")
+	log.Info("successful migration")
 }
