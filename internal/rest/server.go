@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -96,4 +97,5 @@ func (h *handler) handleTime(w http.ResponseWriter, r *http.Request) {
 
 type ipStats struct {
 	ipInfo map[string]int
+	mx     sync.Mutex
 }
