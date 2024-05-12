@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
@@ -10,11 +12,9 @@ type Config struct {
 
 	PGHost     string `env:"PG_HOST" env-default:"localhost"`
 	PGPort     string `env:"PG_PORT" env-default:"5432"`
-	PGDatabase string `env:"PG_DATABASE" env-default:"postgres"`
-	PGUser     string `env:"PG_USER" env-default:"user"`
-	PGPassword string `env:"PG_PASSWORD" env-default:"secret"`
-
-	XRBindAddr string `env:"XR_BIND_ADDR" env-default:":3030"`
+	PGDatabase string `env:"PG_DATABASE" env-default:"postgresdb"`
+	PGUser     string `env:"PG_USER" env-default:"postgres"`
+	PGPassword string `env:"PG_PASSWORD" env-default:"qwerqwer"`
 }
 
 func New() *Config {
@@ -22,7 +22,7 @@ func New() *Config {
 
 	err := cleanenv.ReadEnv(&cfg)
 	if err != nil {
-		panic("error getting config")
+		panic(fmt.Sprintf("error getting config: %v", err))
 	}
 
 	return &cfg

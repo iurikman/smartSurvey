@@ -11,7 +11,6 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	migrate "github.com/rubenv/sql-migrate"
 	log "github.com/sirupsen/logrus"
-	"go.uber.org/zap"
 )
 
 type Postgres struct {
@@ -60,7 +59,7 @@ func (p *Postgres) Migrate(direction migrate.MigrationDirection) error {
 	defer func() {
 		err := conn.Close()
 		if err != nil {
-			zap.L().With(zap.Error(err)).Warn("conn.Close")
+			log.Warnf("conn.Close: %v", err)
 		}
 	}()
 
