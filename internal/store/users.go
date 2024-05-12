@@ -9,7 +9,6 @@ import (
 
 	"github.com/iurikman/smartSurvey/internal/config"
 	"github.com/jackc/pgx/v5/pgxpool"
-	_ "github.com/jackc/pgx/v5/stdlib"
 	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
 )
