@@ -25,7 +25,7 @@ type Server struct {
 func NewServer(port string) *Server {
 	r := http.NewServeMux()
 	h := handler{
-		ipStats: &ipStats{
+		ipStats: ipStats{
 			ipInfo: make(map[string]int),
 		},
 	}
@@ -63,11 +63,12 @@ func (s *Server) Start(ctx context.Context) error {
 }
 
 type handler struct {
-	ipStats *ipStats
+	ipStats ipStats
 }
 
 func (h *handler) handleStats(w http.ResponseWriter, _ *http.Request) {
 	var ipStatInString string
+
 	for key, val := range h.ipStats.ipInfo {
 		ipStatInString += key + " :  " + strconv.Itoa(val) + "  ||||  "
 	}
@@ -95,6 +96,6 @@ func (h *handler) handleTime(w http.ResponseWriter, r *http.Request) {
 }
 
 type ipStats struct {
-	mx     sync.Mutex
 	ipInfo map[string]int
+	mx     sync.Mutex
 }

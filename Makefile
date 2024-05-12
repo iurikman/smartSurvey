@@ -15,3 +15,9 @@ test:
 	fg
 	PID=$!
 	kill $PID
+
+up:
+	docker-compose up -d
+
+down:
+	docker-compose down
