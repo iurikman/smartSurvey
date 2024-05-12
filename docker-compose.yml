@@ -1,7 +1,3 @@
-version: '3.8'
-volumes:
-  postgresdb_volume:
-
 services:
 
   postgresdb:
@@ -10,8 +6,6 @@ services:
     environment:
       POSTGRES_DB: postgresdb
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 0000
+      POSTGRES_PASSWORD: qwerqwer
     ports:
       - "5432:5432"
-    volumes:
-      - postgresdb_volume:/var/lib/postgresql/data
