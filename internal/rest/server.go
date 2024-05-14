@@ -2,42 +2,53 @@ package server
 
 import (
 	"context"
+	"crypto/rsa"
 	"errors"
 	"fmt"
-	"net/http"
-	"strconv"
-	"sync"
-	"time"
-
+	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
+	"net/http"
+	"time"
 )
 
 const (
-	readHeaderTimeout       = 10 * time.Second
+	//	readHeaderTimeout       = 10 * time.Second
 	gracefulShutdownTimeout = 10 * time.Second
 )
 
-type Server struct {
-	port   string
-	server *http.Server
+type metrics interface {
+	TrackHttpRequest(start time.Time, req *http.Request)
 }
 
-func NewServer(port string) *Server {
-	r := http.NewServeMux()
-	h := handler{
-		ipStats: &ipStats{
-			ipInfo: make(map[string]int),
+type Server struct {
+	port    string
+	server  *http.Server
+	key     *rsa.PublicKey
+	metrics metrics
+	router  *chi.Mux
+	//	service service
+	cfg Config
+}
+
+type Config struct {
+	BindAddress string
+}
+
+func NewServer(cfg Config, key *rsa.PublicKey, metrics metrics) *Server {
+	router := chi.NewRouter()
+
+	return &Server{
+		cfg: cfg,
+		//		service: service,
+		router:  router,
+		key:     key,
+		metrics: metrics,
+		server: &http.Server{
+			Addr:              cfg.BindAddress,
+			ReadHeaderTimeout: 5 * time.Second,
+			Handler:           router,
 		},
 	}
-	r.HandleFunc("GET /time", h.handleTime)
-	r.HandleFunc("GET /stats", h.handleStats)
-	srv := &http.Server{
-		ReadHeaderTimeout: readHeaderTimeout,
-		Addr:              port,
-		Handler:           r,
-	}
-
-	return &Server{port: srv.Addr, server: srv}
 }
 
 func (s *Server) Start(ctx context.Context) error {
@@ -60,46 +71,4 @@ func (s *Server) Start(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-type handler struct {
-	ipStats *ipStats
-}
-
-func (h *handler) handleStats(w http.ResponseWriter, _ *http.Request) {
-	var ipStatInString string
-
-	h.ipStats.mx.Lock()
-
-	defer h.ipStats.mx.Unlock()
-
-	for key, val := range h.ipStats.ipInfo {
-		ipStatInString += key + " :  " + strconv.Itoa(val) + "  ||||  "
-	}
-
-	_, err := w.Write([]byte(ipStatInString))
-	if err != nil {
-		logrus.Warnf("Write error: %v", err)
-
-		return
-	}
-}
-
-func (h *handler) handleTime(w http.ResponseWriter, r *http.Request) {
-	h.ipStats.mx.Lock()
-	defer h.ipStats.mx.Unlock()
-
-	h.ipStats.ipInfo[r.RemoteAddr]++
-
-	_, err := w.Write([]byte(time.Now().String()))
-	if err != nil {
-		logrus.Warnf("Write error: %v", err)
-
-		return
-	}
-}
-
-type ipStats struct {
-	mx     sync.Mutex
-	ipInfo map[string]int
 }

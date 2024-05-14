@@ -3,6 +3,7 @@ module github.com/iurikman/smartSurvey
 go 1.22
 
 require (
+	github.com/go-chi/chi/v5 v5.0.12
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/rubenv/sql-migrate v1.6.1
