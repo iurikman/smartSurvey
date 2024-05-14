@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/iurikman/smartSurvey/internal/config"
 	"github.com/jackc/pgx/v5/pgxpool"
 	migrate "github.com/rubenv/sql-migrate"
 	log "github.com/sirupsen/logrus"
@@ -21,7 +20,15 @@ type Postgres struct {
 //go:embed migrations
 var migrations embed.FS
 
-func New(ctx context.Context, cfg *config.Config) (*Postgres, error) {
+type Config struct {
+	PGUser     string
+	PGPassword string
+	PGHost     string
+	PGPort     string
+	PGDatabase string
+}
+
+func New(ctx context.Context, cfg Config) (*Postgres, error) {
 	urlScheme := url.URL{
 		Scheme:   "postgres",
 		User:     url.UserPassword(cfg.PGUser, cfg.PGPassword),

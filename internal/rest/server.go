@@ -2,13 +2,13 @@ package server
 
 import (
 	"context"
-	"crypto/rsa"
 	"errors"
 	"fmt"
-	"github.com/go-chi/chi/v5"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -16,33 +16,22 @@ const (
 	gracefulShutdownTimeout = 10 * time.Second
 )
 
-type metrics interface {
-	TrackHttpRequest(start time.Time, req *http.Request)
-}
-
 type Server struct {
-	port    string
-	server  *http.Server
-	key     *rsa.PublicKey
-	metrics metrics
-	router  *chi.Mux
-	//	service service
-	cfg Config
+	router *chi.Mux
+	cfg    Config
+	server *http.Server
 }
 
 type Config struct {
 	BindAddress string
 }
 
-func NewServer(cfg Config, key *rsa.PublicKey, metrics metrics) *Server {
+func NewServer(cfg Config) *Server {
 	router := chi.NewRouter()
 
 	return &Server{
-		cfg: cfg,
-		//		service: service,
-		router:  router,
-		key:     key,
-		metrics: metrics,
+		cfg:    cfg,
+		router: router,
 		server: &http.Server{
 			Addr:              cfg.BindAddress,
 			ReadHeaderTimeout: 5 * time.Second,

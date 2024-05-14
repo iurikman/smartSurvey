@@ -17,7 +17,7 @@ type Config struct {
 	PGPassword string `env:"PG_PASSWORD" env-default:"qwerqwer"`
 }
 
-func New() *Config {
+func New() Config {
 	cfg := Config{}
 
 	err := cleanenv.ReadEnv(&cfg)
@@ -25,5 +25,5 @@ func New() *Config {
 		panic(fmt.Sprintf("error getting config: %v", err))
 	}
 
-	return &cfg
+	return cfg
 }
