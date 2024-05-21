@@ -20,10 +20,18 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGHUP, syscall.SIGQUIT)
 	defer cancel()
 
-	serverOne := server.NewServer(":8080")
 	cfg := config.New()
+	serverOne := server.NewServer(server.Config{
+		BindAddress: cfg.BindAddress,
+	})
 
-	pgStore, err := store.New(ctx, cfg)
+	pgStore, err := store.New(ctx, store.Config{
+		PGUser:     cfg.PGUser,
+		PGPassword: cfg.PGPassword,
+		PGHost:     cfg.PGHost,
+		PGPort:     cfg.PGPort,
+		PGDatabase: cfg.PGDatabase,
+	})
 	if err != nil {
 		log.Panicf("pgStore.New: %v", err)
 	}
