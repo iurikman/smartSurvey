@@ -46,4 +46,5 @@ func main() {
 	if err != nil {
 		log.Panicf("Server start error: %v", err)
 	}
+	serverOne.CreateUser("test user")
 }

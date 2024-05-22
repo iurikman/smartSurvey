@@ -17,9 +17,10 @@ const (
 )
 
 type Server struct {
-	router *chi.Mux
-	cfg    Config
-	server *http.Server
+	router  *chi.Mux
+	cfg     Config
+	service service
+	server  *http.Server
 }
 
 type Config struct {
