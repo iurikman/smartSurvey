@@ -17,9 +17,10 @@ const (
 )
 
 type Server struct {
-	router *chi.Mux
-	cfg    Config
-	server *http.Server
+	router  *chi.Mux
+	cfg     Config
+	service service
+	server  *http.Server
 }
 
 type Config struct {
@@ -60,4 +61,10 @@ func (s *Server) Start(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func (s *Server) configRouter() {
+	s.router.Route("/api", func(r chi.Router) {
+		r.Post("/users", s.createUser)
+	})
 }
