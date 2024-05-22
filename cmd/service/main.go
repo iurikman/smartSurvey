@@ -8,6 +8,7 @@ import (
 	"github.com/iurikman/smartSurvey/internal/config"
 	"github.com/iurikman/smartSurvey/internal/logger"
 	server "github.com/iurikman/smartSurvey/internal/rest"
+	"github.com/iurikman/smartSurvey/internal/service"
 	"github.com/iurikman/smartSurvey/internal/store"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	migrate "github.com/rubenv/sql-migrate"
@@ -21,10 +22,6 @@ func main() {
 	defer cancel()
 
 	cfg := config.New()
-	serverOne := server.NewServer(server.Config{
-		BindAddress: cfg.BindAddress,
-	})
-
 	pgStore, err := store.New(ctx, store.Config{
 		PGUser:     cfg.PGUser,
 		PGPassword: cfg.PGPassword,
@@ -32,6 +29,12 @@ func main() {
 		PGPort:     cfg.PGPort,
 		PGDatabase: cfg.PGDatabase,
 	})
+	serviceLayer := service.New(pgStore)
+	serverOne := server.NewServer(
+		server.Config{BindAddress: cfg.BindAddress},
+		serviceLayer,
+	)
+
 	if err != nil {
 		log.Panicf("pgStore.New: %v", err)
 	}

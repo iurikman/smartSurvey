@@ -27,12 +27,13 @@ type Config struct {
 	BindAddress string
 }
 
-func NewServer(cfg Config) *Server {
+func NewServer(cfg Config, service service) *Server {
 	router := chi.NewRouter()
 
 	return &Server{
-		cfg:    cfg,
-		router: router,
+		cfg:     cfg,
+		router:  router,
+		service: service,
 		server: &http.Server{
 			Addr:              cfg.BindAddress,
 			ReadHeaderTimeout: 5 * time.Second,
@@ -42,6 +43,8 @@ func NewServer(cfg Config) *Server {
 }
 
 func (s *Server) Start(ctx context.Context) error {
+	s.configRouter()
+
 	go func() {
 		<-ctx.Done()
 		ctxWithTimeOut, cancel := context.WithTimeout(ctx, gracefulShutdownTimeout)
