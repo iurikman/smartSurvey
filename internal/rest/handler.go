@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"github.com/go-chi/chi/v5"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -21,6 +22,7 @@ type TransferResponse struct {
 
 type service interface {
 	CreateUser(ctx context.Context, user model.User) (*model.User, error)
+	GetUserByID(ctx context.Context, id uuid.UUID) (*model.User, error)
 }
 
 func (s *Server) createUser(w http.ResponseWriter, r *http.Request) {
@@ -32,6 +34,24 @@ func (s *Server) createUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeOkResponse(w, http.StatusCreated, user)
+}
+
+func (s *Server) getUserByID(w http.ResponseWriter, r *http.Request) {
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		log.Warnf("uuid.Parse err: %v", err)
+
+		return
+	}
+
+	user, err := s.service.GetUserByID(r.Context(), id)
+	if err != nil {
+		log.Warnf("s.service.GetUserByID err: %v", err)
+
+		return
+	}
+	writeOkResponse(w, http.StatusOK, user)
+
 }
 
 func writeOkResponse(w http.ResponseWriter, statusCode int, user any) {

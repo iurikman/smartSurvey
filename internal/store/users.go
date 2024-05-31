@@ -32,3 +32,28 @@ func (p *Postgres) CreateUser(ctx context.Context, user model.User) (*model.User
 
 	return &user, nil
 }
+
+func (p *Postgres) GetUserByID(ctx context.Context, id uuid.UUID) (*model.User, error) {
+	user := new(model.User)
+
+	query := `
+		SELECT id, name, email
+		FROM users
+		WHERE id = $1
+		`
+
+	err := p.db.QueryRow(
+		ctx,
+		query,
+		id,
+	).Scan(
+		&user.ID,
+		&user.Name,
+		&user.Email,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error getting user: %w", err)
+	}
+
+	return user, nil
+}
