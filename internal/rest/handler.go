@@ -3,9 +3,9 @@ package server
 import (
 	"context"
 	"encoding/json"
-	"github.com/go-chi/chi/v5"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/iurikman/smartSurvey/internal/model"
 	log "github.com/sirupsen/logrus"
@@ -50,8 +50,8 @@ func (s *Server) getUserByID(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-	writeOkResponse(w, http.StatusOK, user)
 
+	writeOkResponse(w, http.StatusOK, user)
 }
 
 func writeOkResponse(w http.ResponseWriter, statusCode int, user any) {
