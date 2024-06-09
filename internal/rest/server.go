@@ -69,6 +69,10 @@ func (s *Server) Start(ctx context.Context) error {
 func (s *Server) configRouter() {
 	s.router.Route("/api", func(r chi.Router) {
 		r.Post("/users", s.createUser)
+		r.Post("/companies", s.createCompany)
 		r.Get("/users/{id}", s.getUserByID)
+		r.Patch("/users/{id}", s.updateUser)
+		r.Patch("/companies/{id}", s.updateCompany)
+		r.Delete("/users/{id}", s.deleteUser)
 	})
 }
