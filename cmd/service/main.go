@@ -22,6 +22,7 @@ func main() {
 	defer cancel()
 
 	cfg := config.New()
+
 	pgStore, err := store.New(ctx, store.Config{
 		PGUser:     cfg.PGUser,
 		PGPassword: cfg.PGPassword,
@@ -29,15 +30,15 @@ func main() {
 		PGPort:     cfg.PGPort,
 		PGDatabase: cfg.PGDatabase,
 	})
+	if err != nil {
+		log.Panicf("pgStore.New: %v", err)
+	}
+
 	serviceLayer := service.New(pgStore)
 	serverOne := server.NewServer(
 		server.Config{BindAddress: cfg.BindAddress},
 		serviceLayer,
 	)
-
-	if err != nil {
-		log.Panicf("pgStore.New: %v", err)
-	}
 
 	if err := pgStore.Migrate(migrate.Up); err != nil {
 		log.Panicf("pgStore.Migrate: %v", err)
