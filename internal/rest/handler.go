@@ -41,7 +41,7 @@ func (s *Server) createCompany(w http.ResponseWriter, r *http.Request) {
 
 	switch {
 	case errors.Is(err, models.ErrCompanyNameIsEmpty):
-		writeErrorResponse(w, http.StatusBadRequest, err.Error())
+		writeErrorResponse(w, http.StatusUnprocessableEntity, err.Error())
 
 		return
 	case errors.Is(err, models.ErrDuplicateCompany):
@@ -68,7 +68,7 @@ func (s *Server) updateCompany(w http.ResponseWriter, r *http.Request) {
 
 	switch {
 	case errors.Is(err, models.ErrCompanyNameIsEmpty):
-		writeErrorResponse(w, http.StatusBadRequest, err.Error())
+		writeErrorResponse(w, http.StatusUnprocessableEntity, err.Error())
 
 		return
 	case errors.Is(err, models.ErrCompanyNotFound):
@@ -97,15 +97,15 @@ func (s *Server) createUser(w http.ResponseWriter, r *http.Request) {
 
 	switch {
 	case errors.Is(err, models.ErrUserNameIsEmpty):
-		writeErrorResponse(w, http.StatusBadRequest, err.Error())
+		writeErrorResponse(w, http.StatusUnprocessableEntity, err.Error())
 
 		return
 	case errors.Is(err, models.ErrEmailIsEmpty):
-		writeErrorResponse(w, http.StatusBadRequest, err.Error())
+		writeErrorResponse(w, http.StatusUnprocessableEntity, err.Error())
 
 		return
 	case errors.Is(err, models.ErrPhoneIsEmpty):
-		writeErrorResponse(w, http.StatusBadRequest, err.Error())
+		writeErrorResponse(w, http.StatusUnprocessableEntity, err.Error())
 
 		return
 	case errors.Is(err, models.ErrDuplicateUser):
@@ -165,11 +165,11 @@ func (s *Server) updateUser(w http.ResponseWriter, r *http.Request) {
 
 	switch {
 	case errors.Is(err, models.ErrUserNameIsEmpty):
-		writeErrorResponse(w, http.StatusBadRequest, err.Error())
+		writeErrorResponse(w, http.StatusUnprocessableEntity, err.Error())
 
 		return
 	case errors.Is(err, models.ErrEmailIsEmpty):
-		writeErrorResponse(w, http.StatusBadRequest, err.Error())
+		writeErrorResponse(w, http.StatusUnprocessableEntity, err.Error())
 
 		return
 	case errors.Is(err, models.ErrUserNotFound):
@@ -178,10 +178,6 @@ func (s *Server) updateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	case errors.Is(err, models.ErrDuplicateUser):
 		writeErrorResponse(w, http.StatusUnprocessableEntity, "duplicate user")
-
-		return
-	case errors.Is(err, models.ErrNotAllowed):
-		writeErrorResponse(w, http.StatusUnauthorized, "not allowed")
 
 		return
 	case err != nil:
@@ -204,7 +200,9 @@ func (s *Server) deleteUser(w http.ResponseWriter, r *http.Request) {
 
 	switch {
 	case errors.Is(err, models.ErrNilUUID):
-		fallthrough
+		writeErrorResponse(w, http.StatusUnprocessableEntity, "nil uuid")
+
+		return
 	case errors.Is(err, models.ErrUserNotFound):
 		writeErrorResponse(w, http.StatusNotFound, "user not found")
 

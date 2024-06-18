@@ -34,20 +34,20 @@ func main() {
 		log.Panicf("pgStore.New: %v", err)
 	}
 
-	serviceLayer := service.New(pgStore)
-	serverOne := server.NewServer(
-		server.Config{BindAddress: cfg.BindAddress},
-		serviceLayer,
-	)
-
 	if err := pgStore.Migrate(migrate.Up); err != nil {
 		log.Panicf("pgStore.Migrate: %v", err)
 	}
 
+	svc := service.New(pgStore)
+
+	httpServer := server.NewServer(
+		server.Config{BindAddress: cfg.BindAddress},
+		svc,
+	)
+
 	log.Info("successful migration")
 
-	err = serverOne.Start(ctx)
-	if err != nil {
+	if err = httpServer.Start(ctx); err != nil {
 		log.Panicf("Server start error: %v", err)
 	}
 }

@@ -37,7 +37,7 @@ func (s *IntegrationTestSuite) TestCompanies() {
 				s.testCompanyID = rCompany.ID
 			})
 
-			s.Run("400/badRequest/companyNameIsEmpty", func() {
+			s.Run("422/StatusUnprocessableEntity/companyNameIsEmpty", func() {
 				resp := s.sendRequest(
 					context.Background(),
 					http.MethodPost,
@@ -45,7 +45,7 @@ func (s *IntegrationTestSuite) TestCompanies() {
 					company3,
 					nil,
 				)
-				s.Require().Equal(http.StatusBadRequest, resp.StatusCode)
+				s.Require().Equal(http.StatusUnprocessableEntity, resp.StatusCode)
 			})
 
 			s.Run("409/duplicate company", func() {
@@ -61,7 +61,7 @@ func (s *IntegrationTestSuite) TestCompanies() {
 		})
 
 		s.Run("PATCH:/companies", func() {
-			s.Run("404/userNotFound", func() {
+			s.Run("404/companyNotFound", func() {
 				resp := s.sendRequest(
 					context.Background(),
 					http.MethodPatch,
@@ -72,7 +72,7 @@ func (s *IntegrationTestSuite) TestCompanies() {
 				s.Require().Equal(http.StatusNotFound, resp.StatusCode)
 			})
 
-			s.Run("400/badRequest/companyNameIsEmpty", func() {
+			s.Run("422/StatusUnprocessableEntity/companyNameIsEmpty", func() {
 				resp := s.sendRequest(
 					context.Background(),
 					http.MethodPost,
@@ -80,7 +80,7 @@ func (s *IntegrationTestSuite) TestCompanies() {
 					company3,
 					nil,
 				)
-				s.Require().Equal(http.StatusBadRequest, resp.StatusCode)
+				s.Require().Equal(http.StatusUnprocessableEntity, resp.StatusCode)
 			})
 		})
 	})

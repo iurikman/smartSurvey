@@ -139,13 +139,12 @@ func (p *Postgres) DeleteUser(ctx context.Context, id uuid.UUID) error {
 		query,
 		id,
 	)
+	if err != nil {
+		return fmt.Errorf("error deleting user: %w", err)
+	}
 
 	if result.RowsAffected() == 0 {
 		return models.ErrUserNotFound
-	}
-
-	if err != nil {
-		return fmt.Errorf("error deleting user: %w", err)
 	}
 
 	return nil

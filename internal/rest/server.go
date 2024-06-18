@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	//	readHeaderTimeout       = 10 * time.Second
 	gracefulShutdownTimeout = 10 * time.Second
+	readHeaderTimeout       = 5 * time.Second
 )
 
 type Server struct {
@@ -36,7 +36,7 @@ func NewServer(cfg Config, service service) *Server {
 		service: service,
 		server: &http.Server{
 			Addr:              cfg.BindAddress,
-			ReadHeaderTimeout: 5 * time.Second,
+			ReadHeaderTimeout: readHeaderTimeout,
 			Handler:           router,
 		},
 	}
@@ -67,12 +67,17 @@ func (s *Server) Start(ctx context.Context) error {
 }
 
 func (s *Server) configRouter() {
-	s.router.Route("/api", func(r chi.Router) {
-		r.Post("/users", s.createUser)
-		r.Post("/companies", s.createCompany)
-		r.Get("/users/{id}", s.getUserByID)
-		r.Patch("/users/{id}", s.updateUser)
-		r.Patch("/companies/{id}", s.updateCompany)
-		r.Delete("/users/{id}", s.deleteUser)
+	s.router.Route("/api/v1", func(r chi.Router) {
+		r.Route("/users", func(r chi.Router) {
+			r.Post("/", s.createUser)
+			r.Get("/{id}", s.getUserByID)
+			r.Patch("/{id}", s.updateUser)
+			r.Delete("/{id}", s.deleteUser)
+		})
+
+		r.Route("/companies", func(r chi.Router) {
+			r.Post("/", s.createCompany)
+			r.Patch("/{id}", s.updateCompany)
+		})
 	})
 }

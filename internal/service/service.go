@@ -28,8 +28,8 @@ func New(db store) *Service {
 }
 
 func (s *Service) CreateCompany(ctx context.Context, company models.Company) (*models.Company, error) {
-	if company.Name == "" {
-		return nil, fmt.Errorf("name is required: %w", models.ErrCompanyNameIsEmpty)
+	if err := company.Validate(); err != nil {
+		return nil, fmt.Errorf("company.Validate(): %w", models.ErrCompanyNameIsEmpty)
 	}
 
 	rCompany, err := s.db.CreateCompany(ctx, company)
@@ -41,8 +41,8 @@ func (s *Service) CreateCompany(ctx context.Context, company models.Company) (*m
 }
 
 func (s *Service) UpdateCompany(ctx context.Context, company models.Company) (*models.Company, error) {
-	if company.Name == "" {
-		return nil, fmt.Errorf("name is required: %w", models.ErrCompanyNameIsEmpty)
+	if err := company.Validate(); err != nil {
+		return nil, fmt.Errorf("company.Validate(): %w", err)
 	}
 
 	rCompany, err := s.db.UpdateCompany(ctx, company)
@@ -54,16 +54,8 @@ func (s *Service) UpdateCompany(ctx context.Context, company models.Company) (*m
 }
 
 func (s *Service) CreateUser(ctx context.Context, user models.User) (*models.User, error) {
-	if user.Name == "" {
-		return nil, fmt.Errorf("name is required: %w", models.ErrUserNameIsEmpty)
-	}
-
-	if *user.Email == "" {
-		return nil, fmt.Errorf("email is rewuired: %w", models.ErrEmailIsEmpty)
-	}
-
-	if *user.Phone == "" {
-		return nil, fmt.Errorf("phone is empty: %w", models.ErrPhoneIsEmpty)
+	if err := user.Validate(); err != nil {
+		return nil, fmt.Errorf("user.Validate(): %w", err)
 	}
 
 	rUser, err := s.db.CreateUser(ctx, user)
@@ -84,16 +76,8 @@ func (s *Service) GetUserByID(ctx context.Context, id uuid.UUID) (*models.User, 
 }
 
 func (s *Service) UpdateUser(ctx context.Context, id uuid.UUID, user models.UpdateUserRequest) (*models.User, error) {
-	if user.Name == "" {
-		return nil, fmt.Errorf("user name is empty: %w", models.ErrUserNameIsEmpty)
-	}
-
-	if user.Email == "" {
-		return nil, fmt.Errorf("user email is empty: %w", models.ErrEmailIsEmpty)
-	}
-
-	if user.Phone == "" {
-		return nil, fmt.Errorf("user phone is empty: %w", models.ErrPhoneIsEmpty)
+	if err := user.Validate(); err != nil {
+		return nil, fmt.Errorf("user.Validate(): %w", err)
 	}
 
 	newUser, err := s.db.UpdateUser(ctx, id, user)
